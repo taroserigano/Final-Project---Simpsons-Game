@@ -1,0 +1,278 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Simpsons Match Game</title>
+
+
+<style>
+
+* {
+	margin: 0;
+	padding: 0;
+}
+body {
+    background-image: url("images/simpsons.jpg");
+	background-size: cover;
+	
+	font: 18px Verdana;
+	color: white;
+     background-color: white;
+	 
+    background-repeat: no-repeat;
+  
+}
+
+#logo {
+    display: block;
+    margin-left: auto;
+	
+     margin-right: auto;
+    margin-top: 25px;
+
+}
+
+#p1{
+    float: right;
+    margin-right: 15%;	
+
+}
+
+#picbox {
+    
+	margin: 0px auto;
+	width: 640px;
+	margin-top: 25px;
+}
+#boxcard {
+	z-index: 1;
+	margin: 10px 0 0;
+
+}
+#boxcard div{
+	float: left;
+	width: 100px;
+	height: 100px;
+	margin: 5px;
+	padding: 5px;
+	
+	border: 4px solid red;
+	 cursor: pointer;
+	border-radius: 10px;
+	box-shadow: 0 1px 5px rgba(0,0,0,.5);
+  background: white;
+	z-index: 2;
+}
+#boxcard div img {
+	display: none;
+border-radius: 10px;
+	z-index: 3;
+height:100px;
+	width: 100px;
+
+}
+#boxbuttons {
+	text-align: center;
+	margin: 30px;
+	display: block;
+	width: auto;
+
+}
+#boxbuttons .button {
+	text-transform: uppercase;
+	background: green;
+	padding: 5px 10px;
+	margin: 5px;
+	border-radius: 10px;
+	cursor: pointer;
+}
+#boxbuttons .button:hover {
+	background: blue;
+}
+
+
+#buttonBox {
+margin: 25px;
+}
+
+
+.rules {
+display: block;
+margin: 0 auto;
+}
+
+
+
+
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+<script>
+var BoxOpened = "";
+var ImgOpened = "";
+var Counter = 0;
+var ImgFound = 0;
+
+var Source = "#boxcard";
+
+var ImgSource = [
+  "images/homer.jpg",
+  "images/apu.jpg",
+  "images/burns.jpg",
+  "images/clown.jpg",
+  "images/bart.jpg",
+   "images/lisa.jpg",
+  "images/marge.jpg",
+  "images/milhouse.jpg",
+  "images/moe.jpg",
+  "images/ned.jpg"
+];
+
+function RandomFunction(MaxValue, MinValue) {
+		return Math.round(Math.random() * (MaxValue - MinValue) + MinValue);
+	}
+	
+function ShuffleImages() {
+	var ImgAll = $(Source).children();
+    	var ImgThis = $(Source + " div:first-child");
+	  var ImgArr = new Array();
+
+	for (var i = 0; i < ImgAll.length; i++) {
+		ImgArr[i] = $("#" + ImgThis.attr("id") + " img").attr("src");
+		   ImgThis = ImgThis.next();
+	}
+	
+		ImgThis = $(Source + " div:first-child");
+	
+	for (var z = 0; z < ImgAll.length; z++) {
+	 var RandomNumber = RandomFunction(0, ImgArr.length - 1);
+
+		$("#" + ImgThis.attr("id") + " img").attr("src", ImgArr[RandomNumber]);
+		 ImgArr.splice(RandomNumber, 1);
+   ImgThis = ImgThis.next();
+	}
+}
+
+function ResetGame() {
+ShuffleImages();
+	 $(Source + " div img").hide();
+	$(Source + " div").css("visibility", "visible");
+	 Counter = 0;
+	 $("#success").remove();
+	 
+	$("#counter").html("" + Counter);
+	  BoxOpened = "";
+	ImgOpened = "";
+	
+	ImgFound = 0;
+	
+	return false;
+}
+
+function description() {
+   
+    $('body').css('background-image', 'url(images/simpsons2.jpg)');
+}
+
+
+function OpenCard() {
+	var id = $(this).attr("id");
+
+	 if ($("#" + id + " img").is(":hidden")) {
+		 $(Source + " div").unbind("click", OpenCard);
+	
+ $("#" + id + " img").slideDown('fast');
+
+		 if (ImgOpened == "") {
+		BoxOpened = id;
+			 ImgOpened = $("#" + id + " img").attr("src");
+			 
+			setTimeout(function() {
+				$(Source + " div").bind("click", OpenCard)
+			}, 300);
+		} else {
+			CurrentOpened = $("#" + id + " img").attr("src");
+			if (ImgOpened != CurrentOpened) {
+			setTimeout(function() {
+					$("#" + id + " img").slideUp('fast');
+					
+				    	$("#" + BoxOpened + " img").slideUp('fast');
+						
+					BoxOpened = "";
+					ImgOpened = "";
+				}, 400);
+			} else {
+			
+				$("#" + id + " img").parent().css("visibility", "hidden");
+				$("#" + BoxOpened + " img").parent().css("visibility", "hidden");
+				  ImgFound++;
+				   BoxOpened = "";
+				 ImgOpened = "";
+			}
+			 setTimeout(function() {
+				$(Source + " div").bind("click", OpenCard)
+			}, 400);
+		}
+		Counter++;
+	    	$("#counter").html("" + Counter);
+
+		if (ImgFound == ImgSource.length) {
+			 $("#counter").prepend('<span id="success">You Found All Pictues!! With </span>');
+			
+		}
+	}
+}
+
+$(function() {
+
+for (var y = 1; y < 3 ; y++) {
+	$.each(ImgSource, function(i, val) {
+		  $(Source).append("<div id=card" + y + i + "><img src=" + val + " />");
+	});
+}
+	 $(Source + " div").click(OpenCard);
+	ShuffleImages();
+});
+
+
+
+</script>
+</head>
+
+<body>
+
+<audio autoplay loop>
+<source src="audio/song.mp3">
+</audio>
+
+
+<div id="head">
+<img id="logo" src="images/logo.jpg">
+</div>
+
+
+<div id="picbox">
+
+    <span id="boxbuttons">
+    <span class="button">
+      <span id="counter">0</span>
+      <span id="times">Times</span>
+    </span>
+    <span class="button">
+      <a onclick="ResetGame();">Play Again</a>
+    </span> 
+	   <span class="button">
+      <a onclick="description();">Rules</a>
+    </span> 
+  </span>
+ 
+
+  <div id="boxcard"></div>
+
+  
+  
+</div>
+
+
+
+</body>
+</html>
